@@ -1,0 +1,20 @@
+---
+# ansible-playbook -i HOST, locale-gen.yml
+#
+#WARNING! Your environment specifies an invalid locale.
+# The unknown environment variables are:
+#   LC_CTYPE=zh_CN.UTF-8 LC_ALL=
+# This can affect your user experience significantly, including the
+# ability to manage packages. You may install the locales by running:
+#
+#   sudo apt-get install language-pack-zh
+#     or
+#   sudo locale-gen zh_CN.UTF-8
+#
+- hosts:
+    all
+
+  tasks:
+
+  - name: locale-gen or language-pack
+    command: locale-gen zh_CN.UTF-8

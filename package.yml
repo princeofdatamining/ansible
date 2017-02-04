@@ -1,0 +1,13 @@
+---
+# ansible-playbook -i HOST, -e packages=git package.yml
+- hosts:
+    all
+
+  vars:
+    packages: ''
+
+  tasks:
+
+  - package:
+      name: "{{packages}}"
+    when: packages != ''

@@ -1,0 +1,86 @@
+---
+# ansible-playbook -i HOST, supervisor.yml
+- hosts:
+    all
+
+  tasks:
+
+  - name: require easy_install
+    package:
+      name: python-setuptools
+
+  - name: test supervisord
+    command: command -v supervisord
+    ignore_errors: true
+    register: whereis
+
+  - name: install supervisord
+    command: easy_install supervisor
+    when: whereis.stdout == ''
+
+  - name: whereis supervisord
+    command: command -v supervisord
+    ignore_errors: true
+    register: whereis
+
+  - name: link
+    file:
+      src: "{{whereis.stdout}}"
+      dest: /usr/bin/supervisord
+      owner: root
+      group: root
+      mode: 0755
+      state: link
+    when: whereis.stdout.find("/usr/bin/") == -1
+
+  - name: supervisord.service
+    copy:
+      src: supervisord.service
+      dest: /etc/systemd/system/supervisord.service
+      owner: root
+      group: root
+      mode: 0644
+      force: no
+    when: whereis.stdout != ''
+
+  - name: supervisor.conf
+    copy:
+      src: supervisor.conf
+      dest: /etc/supervisor.conf
+      owner: root
+      group: root
+      mode: 0644
+      force: no
+
+  - name: supervisor.d
+    file:
+      path: /etc/supervisor.d
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+      force: no
+
+  - name: log directory
+    file:
+      path: /var/log/supervisor
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+      force: no
+
+  - name: pid directory
+    file:
+      path: /var/run/supervisor
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+      force: no
+
+  - name: enable service
+    command: systemctl enable supervisord
+
+  - name: start service
+    command: systemctl start supervisord

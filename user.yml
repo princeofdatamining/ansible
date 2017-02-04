@@ -1,0 +1,56 @@
+---
+# ansible-playbook -i HOST, -e group=GROUP -e user=USER -e grouplist= -e pub= user.yml
+# https://raw.github.com/princeofdatamining/xnx/master/sshkey/sam.pub
+- hosts:
+    all
+
+  vars:
+    user: ""
+    group: ""
+    grouplist: ""
+    pub: ""
+
+  tasks:
+
+  - name: test group
+    shell: cat /etc/group | grep -c "^{{group}}:" || true
+    register: group_exist
+    when: group != ""
+
+  - name: test user
+    shell: cat /etc/passwd | grep -c "^{{user}}:" || true
+    register: user_exist
+    when: user != ""
+
+  - name: force group
+    group:
+      name: "{{group}}"
+    when: group != "" and group_exist.stdout == "0"
+
+  - name: useradd group
+    user:
+      name: "{{user}}"
+      group: "{{group}}"
+    when: user != "" and user_exist.stdout == "0" and group != "" and grouplist == ""
+
+  - name: useradd group groups
+    user:
+      name: "{{user}}"
+      group: "{{group}}"
+      groups: "{{grouplist}}"
+    when: user != "" and user_exist.stdout == "0" and group != "" and grouplist != ""
+
+  - name: user groups
+    user:
+      name: "{{user}}"
+      groups: "{{grouplist}}"
+    when: user != "" and user_exist.stdout != "x" and group == "" and grouplist != ""
+
+  - name: usermod
+    command: usermod -aG "{{group}}" "{{user}}"
+    when: user != "" and user_exist.stdout != "0" and group != ""
+
+  - authorized_key:
+      user: "{{user}}"
+      key: "{{pub}}"
+    when: user != '' and pub != ''
