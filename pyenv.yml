@@ -3,7 +3,6 @@
 
 # apt-get install -y make libssl-dev build-essential zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils       openssl gcc
 # yum install gcc openssl-devel zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel
-# xcode-select --install && brew install bzip2 openssl readline sqlite xz
 
 # wget http://mirrors.sohu.com/python/3.5.2/Python-3.5.2.tar.xz
 - hosts:

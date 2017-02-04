@@ -1,0 +1,13 @@
+
+swap.yml:
+    check mkswap and swapon runned
+
+mkdir:
+    get remote_user
+
+packages:
+    check OS
+
+mysql
+nginx
+mongo
