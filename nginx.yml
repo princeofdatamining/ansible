@@ -1,0 +1,53 @@
+---
+# ansible-playbook -i HOST, nginx.yml
+
+# http://nginx.org/en/linux_packages.html#stable
+-
+  hosts:
+    all
+
+  tasks:
+
+  -
+    name: systemctl - test
+    shell: systemctl -t service --all | grep -c nginx
+    ignore_errors: true
+    register: service
+
+  -
+    assert:
+      that:
+        - "service.stdout == '0'"
+      msg: "service has beed installed!"
+
+  # Ubuntu
+
+  # CentOS
+
+  -
+    name: CentOS - test repo
+    stat:
+      path: "/etc/yum.repos.d/nginx.repo"
+    register: stat
+    when: ansible_distribution == 'CentOS'
+
+  - 
+    name: CentOS - copy repo
+    copy:
+      src: "nginx/nginx-{{ansible_distribution}}-{{ansible_distribution_major_version}}.repo"
+      dest: /etc/yum.repos.d/nginx.repo
+      owner: root
+      group: root
+      mode: 0644
+    when: ansible_distribution == 'CentOS' and stat.stat.exists == False
+
+  # common
+
+  -
+    package:
+      name: nginx
+
+  -
+    name: start service
+    shell: systemctl start nginx
+    when: ansible_distribution == 'CentOS'

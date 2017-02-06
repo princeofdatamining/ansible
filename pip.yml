@@ -1,6 +1,7 @@
 ---
 # ansible-playbook -i HOST, pip.yml
-- hosts:
+-
+  hosts:
     all
 
   tasks:

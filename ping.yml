@@ -1,12 +1,11 @@
 ---
 # ansible-playbook -i HOST, ping.yml
-- hosts:
+-
+  hosts:
     all
 
   tasks:
 
-  - name: echo
-    command: echo "hello ansible"
+  - command: echo "hello ansible"
 
-  - name: ping
-    ping:
+  - ping:

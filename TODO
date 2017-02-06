@@ -2,12 +2,313 @@
 swap.yml:
     check mkswap and swapon runned
 
-mkdir:
-    get remote_user
+{
+    "ansible_facts": {
+        "ansible_distribution": "CentOS", 
+        "ansible_distribution_major_version": "7", 
+        "ansible_distribution_release": "Core", 
+        "ansible_distribution_version": "7.3.1611", 
+        #
+        "ansible_distribution": "Ubuntu", 
+        "ansible_distribution_major_version": "16", 
+        "ansible_distribution_release": "xenial", 
+        "ansible_distribution_version": "16.04", 
+    },
+}
 
-packages:
-    check OS
+138.68.53.141 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_all_ipv4_addresses": [
+            "138.68.53.141", 
+            "10.46.0.6"
+        ], 
+        "ansible_all_ipv6_addresses": [
+            "fe80::3cc0:f6ff:fe34:ed0f"
+        ], 
+        "ansible_architecture": "x86_64", 
+        "ansible_bios_date": "11/03/2016", 
+        "ansible_bios_version": "20161103", 
+        "ansible_cmdline": {
+            "LANG": "en_US.UTF-8", 
+        }, 
+        "ansible_date_time": {
+            "date": "2017-02-06", 
+            "epoch": "1486343390", 
+            "iso8601": "2017-02-06T01:09:50Z", 
+            "time": "01:09:50", 
+            "tz": "UTC", 
+            "tz_offset": "+0000", 
+            "weekday": "星期一", 
+            "weekday_number": "1", 
+            "weeknumber": "06", 
+        }, 
+        "ansible_default_ipv4": {
+            "address": "138.68.53.141", 
+            "alias": "eth0", 
+            "broadcast": "138.68.63.255", 
+            "gateway": "138.68.48.1", 
+            "interface": "eth0", 
+            "macaddress": "3e:c0:f6:34:ed:0f", 
+            "mtu": 1500, 
+            "netmask": "255.255.240.0", 
+            "network": "138.68.48.0", 
+            "type": "ether"
+        }, 
+        "ansible_default_ipv6": {}, 
+        "ansible_devices": {
+            "vda": {
+                "partitions": {
+                    "vda1": {
+                        "size": "20.00 GB", 
+                    }, 
+                }, 
+                "size": "20.00 GB", 
+            }
+        },
+        "ansible_eth0": {
+            "active": true, 
+            "device": "eth0", 
+            "ipv4": {
+                "address": "138.68.53.141", 
+                "broadcast": "138.68.63.255", 
+                "netmask": "255.255.240.0", 
+                "network": "138.68.48.0"
+            }, 
+            "ipv4_secondaries": [
+                {
+                    "address": "10.46.0.6", 
+                    "broadcast": "10.46.255.255", 
+                    "netmask": "255.255.0.0", 
+                    "network": "10.46.0.0"
+                }
+            ], 
+            "ipv6": [
+                {
+                    "address": "fe80::3cc0:f6ff:fe34:ed0f", 
+                    "prefix": "64", 
+                    "scope": "link"
+                }
+            ], 
+            "macaddress": "3e:c0:f6:34:ed:0f", 
+            "module": "virtio_net", 
+            "mtu": 1500, 
+            "pciid": "virtio0", 
+            "promisc": false, 
+            "type": "ether"
+        }, 
+        "ansible_fips": false, 
+        "ansible_form_factor": "Other", 
+        "ansible_fqdn": "masterdb", 
+        "ansible_hostname": "masterdb", 
+        "ansible_interfaces": [
+            "lo", 
+            "eth1", 
+            "eth0"
+        ], 
+        "ansible_kernel": "3.10.0-514.2.2.el7.x86_64", 
+        "ansible_machine": "x86_64", 
+        "ansible_machine_id": "367ef9834a1546908d3b7491d9bfe295", 
+        "ansible_memfree_mb": 7, 
+        "ansible_memory_mb": {
+            "nocache": {
+                "free": 383, 
+                "used": 105
+            }, 
+            "real": {
+                "free": 7, 
+                "total": 488, 
+                "used": 481
+            }, 
+            "swap": {
+                "cached": 0, 
+                "free": 0, 
+                "total": 0, 
+                "used": 0
+            }
+        }, 
+        "ansible_memtotal_mb": 488, 
+        "ansible_nodename": "masterdb", 
+        "ansible_os_family": "RedHat", 
+        "ansible_pkg_mgr": "yum", 
+        "ansible_processor": [
+            "GenuineIntel", 
+            "Intel(R) Xeon(R) CPU E5-2650L v3 @ 1.80GHz"
+        ], 
+        "ansible_processor_cores": 1, 
+        "ansible_processor_count": 1, 
+        "ansible_processor_threads_per_core": 1, 
+        "ansible_processor_vcpus": 1, 
+        "ansible_product_name": "Droplet", 
+        "ansible_product_serial": "39023597", 
+        "ansible_product_uuid": "367EF983-4A15-4690-8D3B-7491D9BFE295", 
+        "ansible_product_version": "20161103", 
+        "ansible_python": {
+            "executable": "/usr/bin/python", 
+            "version": {
+                "major": 2, 
+                "micro": 5, 
+                "minor": 7, 
+                "releaselevel": "final", 
+                "serial": 0
+            }, 
+        }, 
+        "ansible_python_version": "2.7.5", 
+        "ansible_selinux": {
+            "status": "disabled"
+        }, 
+        "ansible_service_mgr": "systemd", 
+        "ansible_system": "Linux", 
+        "ansible_system_vendor": "DigitalOcean", 
+        "ansible_user_dir": "/root", 
+        "ansible_user_gid": 0, 
+        "ansible_user_id": "root", 
+        "ansible_user_shell": "/bin/bash", 
+        "ansible_user_uid": 0, 
+        "ansible_userspace_architecture": "x86_64", 
+        "ansible_virtualization_type": "kvm", 
+    }, 
+    "changed": false
+}
 
-mysql
-nginx
-mongo
+138.68.239.121 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_all_ipv4_addresses": [
+            "138.68.239.121", 
+            "10.46.0.7"
+        ], 
+        "ansible_all_ipv6_addresses": [
+            "fe80::8c11:35ff:febe:ecbd"
+        ], 
+        "ansible_architecture": "x86_64", 
+        "ansible_default_ipv4": {
+            "address": "138.68.239.121", 
+            "alias": "eth0", 
+            "broadcast": "138.68.239.255", 
+            "gateway": "138.68.224.1", 
+            "interface": "eth0", 
+            "macaddress": "8e:11:35:be:ec:bd", 
+            "mtu": 1500, 
+            "netmask": "255.255.240.0", 
+            "network": "138.68.224.0", 
+            "type": "ether"
+        }, 
+        "ansible_default_ipv6": {}, 
+        "ansible_devices": {
+            "vda": {
+                "partitions": {
+                    "vda1": {
+                        "sectors": "41940959", 
+                        "sectorsize": 512, 
+                        "size": "20.00 GB", 
+                        "start": "2048"
+                    }
+                }, 
+                "size": "20.00 GB", 
+            }
+        }, 
+        "ansible_domain": "localdomain", 
+        "ansible_eth0": {
+            "active": true, 
+            "device": "eth0", 
+            "ipv4": {
+                "address": "138.68.239.121", 
+                "broadcast": "138.68.239.255", 
+                "netmask": "255.255.240.0", 
+                "network": "138.68.224.0"
+            }, 
+            "ipv6": [
+                {
+                    "address": "fe80::8c11:35ff:febe:ecbd", 
+                    "prefix": "64", 
+                    "scope": "link"
+                }
+            ], 
+            "macaddress": "8e:11:35:be:ec:bd", 
+            "mtu": 1500, 
+            "pciid": "virtio0", 
+            "promisc": false, 
+            "type": "ether"
+        }, 
+        "ansible_fips": false, 
+        "ansible_form_factor": "Other", 
+        "ansible_fqdn": "ubuntu.localdomain", 
+        "ansible_hostname": "ubuntu", 
+        "ansible_interfaces": [
+            "ens4", 
+            "lo", 
+            "eth0_1", 
+            "eth0"
+        ], 
+        "ansible_kernel": "4.4.0-57-generic", 
+        "ansible_lsb": {
+            "codename": "xenial", 
+            "description": "Ubuntu 16.04.1 LTS", 
+            "id": "Ubuntu", 
+            "major_release": "16", 
+            "release": "16.04"
+        }, 
+        "ansible_lvm": {
+            "lvs": {}, 
+            "vgs": {}
+        }, 
+        "ansible_machine": "x86_64", 
+        "ansible_machine_id": "a57123395a84448d87e778dcbb8317ab", 
+        "ansible_memfree_mb": 105, 
+        "ansible_memory_mb": {
+            "nocache": {
+                "free": 406, 
+                "used": 82
+            }, 
+            "real": {
+                "free": 105, 
+                "total": 488, 
+                "used": 383
+            }, 
+            "swap": {
+                "cached": 0, 
+                "free": 0, 
+                "total": 0, 
+                "used": 0
+            }
+        }, 
+        "ansible_memtotal_mb": 488, 
+        "ansible_nodename": "ubuntu", 
+        "ansible_os_family": "Debian", 
+        "ansible_pkg_mgr": "apt", 
+        "ansible_processor": [
+            "GenuineIntel", 
+            "Intel(R) Xeon(R) CPU E5-2650L v3 @ 1.80GHz"
+        ], 
+        "ansible_processor_cores": 1, 
+        "ansible_processor_count": 1, 
+        "ansible_processor_threads_per_core": 1, 
+        "ansible_processor_vcpus": 1, 
+        "ansible_product_name": "Droplet", 
+        "ansible_product_serial": "39155666", 
+        "ansible_product_uuid": "A5712339-5A84-448D-87E7-78DCBB8317AB", 
+        "ansible_product_version": "20161103", 
+        "ansible_python": {
+            "executable": "/usr/bin/python", 
+            "version": {
+                "major": 2, 
+                "micro": 12, 
+                "minor": 7, 
+                "releaselevel": "final", 
+                "serial": 0
+            }, 
+        }, 
+        "ansible_python_version": "2.7.12", 
+        "ansible_selinux": false, 
+        "ansible_service_mgr": "systemd", 
+        "ansible_system": "Linux", 
+        "ansible_system_vendor": "DigitalOcean", 
+        "ansible_user_dir": "/root", 
+        "ansible_user_gid": 0, 
+        "ansible_user_id": "root", 
+        "ansible_user_shell": "/bin/bash", 
+        "ansible_user_uid": 0, 
+        "ansible_userspace_architecture": "x86_64", 
+        "ansible_virtualization_type": "kvm", 
+    }, 
+    "changed": false
+}

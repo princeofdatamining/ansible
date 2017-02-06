@@ -1,6 +1,7 @@
 ---
 # ansible-playbook -i HOST, -e path=PATH -e user=USER -e group=GROUP mkdir.yml
-- hosts:
+-
+  hosts:
     all
 
   vars:
@@ -10,13 +11,14 @@
 
   tasks:
 
-  - stat:
+  -
+    stat:
       path: "{{path}}"
     register: stat
 
-  # TODO: how to get remote_user?
-
-  - file:
+  -
+    name: mkdir with owner and group
+    file:
       path: "{{path}}"
       owner: "{{user}}"
       group: "{{group}}"
@@ -25,7 +27,9 @@
       force: no
     when: stat.stat.exists == False and group != '' and user != ''
 
-  - file:
+  -
+    name: mkdir with group
+    file:
       path: "{{path}}"
       group: "{{group}}"
       state: directory
@@ -33,14 +37,18 @@
       force: no
     when: stat.stat.exists == False and group != '' and user == ''
 
-  - file:
+  -
+    name: mkdir with current
+    file:
       path: "{{path}}"
       state: directory
       mode: 0775
       force: no
     when: stat.stat.exists == False and group == '' and user == ''
 
-  - file:
+  -
+    name: mkdir with owner
+    file:
       path: "{{path}}"
       owner: "{{user}}"
       state: directory

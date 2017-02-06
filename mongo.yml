@@ -1,0 +1,56 @@
+---
+# ansible-playbook -i HOST, mongo.yml
+
+# https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
+-
+  hosts:
+    all
+
+  vars:
+    ver: "3.4"
+
+  tasks:
+
+  -
+    name: systemctl - test
+    shell: systemctl -t service --all | grep -c mongo
+    ignore_errors: true
+    register: service
+
+  -
+    assert:
+      that:
+        - "service.stdout == '0'"
+      msg: "service has beed installed!"
+
+  # Ubuntu
+
+  # CentOS
+
+  -
+    name: CentOS - test repo
+    stat:
+      path: "/etc/yum.repos.d/mongodb-org.repo"
+    register: stat
+    when: ansible_distribution == 'CentOS'
+
+  - 
+    name: CentOS - copy repo
+    copy:
+      src: "mongodb/mongodb-org-{{ver}}-{{ansible_distribution}}.repo"
+      dest: /etc/yum.repos.d/mongodb-org.repo
+      owner: root
+      group: root
+      mode: 0644
+    when: ansible_distribution == 'CentOS' and stat.stat.exists == False
+
+  # common
+
+  -
+    package:
+      name: mongodb-org
+
+  -
+    name: systemctl start
+    shell: systemctl start mongod
+    when: ansible_distribution == 'CentOS'

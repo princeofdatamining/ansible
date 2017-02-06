@@ -1,6 +1,7 @@
 ---
 # ansible-playbook -i HOST, -e file=/swapfile swap.yml
-- hosts:
+-
+  hosts:
     all
 
   vars:
@@ -8,19 +9,22 @@
 
   tasks:
 
-  - name: test
+  - 
     stat:
       path: "{{file}}"
     register: swap
 
-  - name: make
+  -
+    name: make
     command: dd if=/dev/zero of="{{file}}" bs=1024 count=2048k
     when: swap.stat.exists == False
 
   # TODO: check mounted
 
-  - name: mkswap
+  -
+    name: mkswap
     command: mkswap "{{file}}"
 
-  - name: mount
+  -
+    name: mount
     command: swapon "{{file}}"

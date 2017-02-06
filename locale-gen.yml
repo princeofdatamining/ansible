@@ -11,10 +11,10 @@
 #     or
 #   sudo locale-gen zh_CN.UTF-8
 #
-- hosts:
+-
+  hosts:
     all
 
   tasks:
 
-  - name: locale-gen or language-pack
-    command: locale-gen zh_CN.UTF-8
+  - command: locale-gen zh_CN.UTF-8

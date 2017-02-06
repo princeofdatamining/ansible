@@ -1,29 +1,46 @@
 ---
 # ansible-playbook -i HOST, supervisor.yml
-- hosts:
+-
+  hosts:
     all
 
   tasks:
 
-  - name: require easy_install
+  -
+    name: systemctl - test
+    shell: systemctl -t service --all | grep -c supervisor
+    ignore_errors: true
+    register: service
+
+  -
+    assert:
+      that:
+        - "service.stdout == '0'"
+      msg: "service has beed installed!"
+
+  - 
     package:
       name: python-setuptools
 
-  - name: test supervisord
+  -
+    name: test supervisord
     command: command -v supervisord
     ignore_errors: true
     register: whereis
 
-  - name: install supervisord
+  -
+    name: install supervisord
     command: easy_install supervisor
     when: whereis.stdout == ''
 
-  - name: whereis supervisord
+  -
+    name: whereis supervisord
     command: command -v supervisord
     ignore_errors: true
     register: whereis
 
-  - name: link
+  -
+    name: keep /usr/bin/supervisord
     file:
       src: "{{whereis.stdout}}"
       dest: /usr/bin/supervisord
@@ -33,9 +50,10 @@
       state: link
     when: whereis.stdout.find("/usr/bin/") == -1
 
-  - name: supervisord.service
+  -
+    name: supervisord.service
     copy:
-      src: supervisord.service
+      src: supervisor/supervisord.service
       dest: /etc/systemd/system/supervisord.service
       owner: root
       group: root
@@ -43,16 +61,18 @@
       force: no
     when: whereis.stdout != ''
 
-  - name: supervisor.conf
+  -
+    name: supervisor.conf
     copy:
-      src: supervisor.conf
+      src: supervisor/supervisor.conf
       dest: /etc/supervisor.conf
       owner: root
       group: root
       mode: 0644
       force: no
 
-  - name: supervisor.d
+  -
+    name: supervisor.d
     file:
       path: /etc/supervisor.d
       state: directory
@@ -61,7 +81,8 @@
       mode: 0755
       force: no
 
-  - name: log directory
+  -
+    name: log directory
     file:
       path: /var/log/supervisor
       state: directory
@@ -70,7 +91,8 @@
       mode: 0755
       force: no
 
-  - name: pid directory
+  -
+    name: pid directory
     file:
       path: /var/run/supervisor
       state: directory
@@ -79,8 +101,10 @@
       mode: 0755
       force: no
 
-  - name: enable service
+  -
+    name: enable service
     command: systemctl enable supervisord
 
-  - name: start service
+  -
+    name: start service
     command: systemctl start supervisord

@@ -1,7 +1,8 @@
 ---
 # ansible-playbook -i HOST, -e package=git package.yml
 # ansible-playbook -i HOST, -e "p=['gcc','make']" package.yml
-- hosts:
+-
+  hosts:
     all
 
   vars:
@@ -10,13 +11,14 @@
 
   tasks:
 
-  - debug:
-      var: packages
-
-  - package:
+  -
+    name: package
+    package:
       name: "{{package}}"
     when: package != ''
 
-  - package:
+  -
+    name: packages
+    package:
       name: "{{item}}"
     with_items: "{{packages}}"

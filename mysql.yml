@@ -1,0 +1,114 @@
+---
+# ansible-playbook -i HOST, -e ver=5.7 mysql.yml
+
+# https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
+# https://dev.mysql.com/doc/refman/5.7/en/linux-installation-yum-repo.html
+-
+  hosts:
+    all
+
+  vars:
+    ver: 5.7
+    apt: mysql-apt-config_0.8.1-1_all.deb
+    yum: mysql57-community-release-el7-9.noarch.rpm
+    pub_keys:
+      "5.7-Ubuntu-16.04": "8C718D3B5072E1F5"
+
+  tasks:
+
+  -
+    name: systemctl - test
+    shell: systemctl -t service --all | grep -c mysql
+    ignore_errors: true
+    register: service
+
+  -
+    assert:
+      that:
+        - "service.stdout == '0'"
+      msg: "service has beed installed!"
+
+  # Ubuntu
+
+  -
+    name: Ubuntu - test apt source
+    stat:
+      path: "/etc/apt/sources.list.d/mysql.list"
+    register: stat
+    when: ansible_distribution == 'Ubuntu'
+
+  - 
+    name: Ubuntu - copy apt source
+    copy:
+      src: "mysql/mysql-{{ver}}-{{ansible_distribution}}-{{ansible_distribution_version}}"
+      dest: /etc/apt/sources.list.d/mysql.list
+      owner: root
+      group: root
+      mode: 0644
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: signature pub key
+    shell: "apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8C718D3B5072E1F5"
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    apt:
+      update_cache: yes
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - package
+    package:
+      name: mysql-server
+    when: ansible_distribution == 'Ubuntu'
+
+  # CentOS
+
+  -
+    name: CentOS - yum updating
+    yum:
+      list: mysql
+      update_cache: yes
+    when: ansible_distribution == 'CentOS'
+
+  -
+    name: CentOS - test mysql repo
+    shell: yum repolist all | grep -c mysql
+    ignore_errors: true
+    register: repo
+    when: ansible_distribution == 'CentOS'
+
+  -
+    name: CentOS - test .rpm
+    stat:
+      path: "/tmp/{{yum}}"
+    ignore_errors: true
+    register: stat
+    when: ansible_distribution == 'CentOS' and repo.stdout == '0'
+
+  -
+    name: CentOS - get .rpm
+    get_url:
+      url: "https://repo.mysql.com//{{yum}}"
+      dest: "/tmp/{{yum}}"
+    when: ansible_distribution == 'CentOS' and repo.stdout == '0' and stat.stat.exists == False
+
+  -
+    name: CentOS - localinstall
+    # shell: "yum localinstall -y /tmp/{{yum}}"
+    yum:
+      name: "/tmp/{{yum}}"
+    when: ansible_distribution == 'CentOS' and repo.stdout == '0'
+
+  -
+    name: CentOS - package
+    package:
+      name: mysql-community-server
+    when: ansible_distribution == 'CentOS'
+
+  -
+    name: CentOS - service
+    shell: systemctl start mysqld
+    when: ansible_distribution == 'CentOS'
+    # already for Ubuntu after installed

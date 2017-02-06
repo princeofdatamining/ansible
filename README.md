@@ -35,6 +35,7 @@ HOST
 ## ansible & playbook
 
 ```
+ansible -i HOST, all -u USER -m setup
 ansible -i HOST, all -u USER -m ping
 ansible -i HOST, all -u USER -a "echo hello,ansible"
 
