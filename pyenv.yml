@@ -14,6 +14,35 @@
 
   vars:
     group: pyenv
+    packages:
+      "Ubuntu":
+        - "wget"
+        - "curl"
+        - "make"
+        - "gcc"
+        - "openssl"
+        - "zlib1g-dev"
+        - "libbz2-dev"
+        - "libreadline-dev"
+        - "libsqlite3-dev"
+        - "llvm"
+        - "libncurses5-dev"
+        - "xz-utils"
+        - "libssl-dev"
+        - "build-essential"
+      "CentOS":
+        - "wget"
+        - "curl"
+        - "make"
+        - gcc
+        - openssl-devel
+        - zlib-devel
+        - bzip2
+        - readline-devel
+        - sqlite
+        - bzip2-devel
+        - sqlite-devel
+        - patch
 
   tasks:
 
@@ -86,3 +115,8 @@
       group: "{{group}}"
       recurse: yes
     when: group != ''
+
+  -
+    name: "packages"
+    package: name={{ item }}
+    with_items: "{{packages[ansible_distribution]}}"

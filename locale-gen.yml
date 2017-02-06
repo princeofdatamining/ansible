@@ -18,5 +18,16 @@
   tasks:
 
   -
+    name: test locale-gen
+    shell: command -v locale-gen
+    ignore_errors: true
+    register: locale
+  -
+    assert:
+      that:
+        - "locale.rc == 0 and locale.stdout != ''"
+      msg: "Command locale-gen not found."
+
+  -
     command: locale-gen zh_CN.UTF-8
     ignore_errors: true

@@ -4,7 +4,26 @@
   hosts:
     all
 
+  vars:
+    packages:
+      "Ubuntu":
+        - python2.7-minimal
+        - python2.7-dev
+      "CentOS":
+        - python-devel
+
   tasks:
+
+  -
+    name: test uwsgi
+    shell: command -v uwsgi
+    ignore_errors: true
+    register: uwsgi
+  -
+    assert:
+      that:
+        - "uwsgi.rc != 0 or uwsgi.stdout == ''"
+      msg: "Command uwsgi already exists."
 
   -
     name: test pip
@@ -17,10 +36,10 @@
         - "pip.rc == 0 and pip.stdout != ''"
       msg: "Command pip not found."
 
-  # Ubuntu: libexpat1-dev libpython-dev libpython2.7 libpython2.7-dev python2.7-dev
   -
-    package:
-      name: python-dev
+    name: "packages"
+    package: name={{ item }}
+    with_items: "{{packages[ansible_distribution]}}"
 
   -
     name: test uwsgi
