@@ -6,21 +6,65 @@
   hosts:
     all
 
+  vars:
+    service_name: nginx
+
   tasks:
 
   -
-    name: systemctl - test
-    shell: systemctl -t service --all | grep -c nginx
+    name: test systemctl
+    shell: command -v systemctl
     ignore_errors: true
-    register: service
-
+    register: systemctl
   -
     assert:
       that:
-        - "service.stdout == '0'"
-      msg: "service has beed installed!"
+        - "systemctl.stdout != ''"
+      msg: "Command systemctl not found."
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_name}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_name}} has beed installed!"
 
   # Ubuntu
+
+  -
+    name: Ubuntu - test repo
+    stat:
+      path: "/etc/apt/sources.list.d/nginx.list"
+    register: stat
+    when: ansible_distribution == 'Ubuntu'
+
+  -
+    name: Ubuntu - copy repo
+    shell: 'echo "deb http://nginx.org/packages/ubuntu/ {{ansible_distribution_release}} nginx" > /etc/apt/sources.list.d/nginx.list'
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - get apt key
+    get_url:
+      url: http://nginx.org/keys/nginx_signing.key
+      dest: /tmp/nginx_signing.key
+      force: no
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - add apt key
+    shell: "apt-key add /tmp/nginx_signing.key"
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - apt update
+    apt:
+      update_cache: yes
+    when: ansible_distribution == 'Ubuntu'
 
   # CentOS
 
@@ -49,5 +93,4 @@
 
   -
     name: start service
-    shell: systemctl start nginx
-    when: ansible_distribution == 'CentOS'
+    shell: "systemctl start {{service_name}}"

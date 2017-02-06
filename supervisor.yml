@@ -4,19 +4,32 @@
   hosts:
     all
 
+  vars:
+    service_name: supervisord
+
   tasks:
 
   -
-    name: systemctl - test
-    shell: systemctl -t service --all | grep -c supervisor
+    name: test systemctl
+    shell: command -v systemctl
     ignore_errors: true
-    register: service
-
+    register: systemctl
   -
     assert:
       that:
-        - "service.stdout == '0'"
-      msg: "service has beed installed!"
+        - "systemctl.rc == 0 and systemctl.stdout != ''"
+      msg: "Command systemctl not found."
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_name}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_name}} has beed installed!"
 
   - 
     package:
@@ -24,18 +37,18 @@
 
   -
     name: test supervisord
-    command: command -v supervisord
+    shell: command -v supervisord
     ignore_errors: true
     register: whereis
 
   -
     name: install supervisord
-    command: easy_install supervisor
-    when: whereis.stdout == ''
+    shell: easy_install supervisor
+    when: whereis.rc != 0 or whereis.stdout == ''
 
   -
     name: whereis supervisord
-    command: command -v supervisord
+    shell: command -v supervisord
     ignore_errors: true
     register: whereis
 
@@ -103,8 +116,8 @@
 
   -
     name: enable service
-    command: systemctl enable supervisord
+    shell: "systemctl enable {{service_name}}"
 
   -
     name: start service
-    command: systemctl start supervisord
+    shell: "systemctl start {{service_name}}"

@@ -2,28 +2,72 @@
 # ansible-playbook -i HOST, mongo.yml
 
 # https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
+# https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 -
   hosts:
     all
 
   vars:
     ver: "3.4"
+    service_name: mongod
 
   tasks:
 
   -
-    name: systemctl - test
-    shell: systemctl -t service --all | grep -c mongo
+    name: test systemctl
+    shell: command -v systemctl
     ignore_errors: true
-    register: service
-
+    register: systemctl
   -
     assert:
       that:
-        - "service.stdout == '0'"
-      msg: "service has beed installed!"
+        - "systemctl.stdout != ''"
+      msg: "Command systemctl not found."
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_name}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_name}} has beed installed!"
 
   # Ubuntu
+
+  -
+    name: Ubuntu - test repo
+    stat:
+      path: "/etc/apt/sources.list.d/mongodb-org.list"
+    register: stat
+    when: ansible_distribution == 'Ubuntu'
+
+  -
+    name: Ubuntu - copy repo
+    shell: 'echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu {{ansible_distribution_release}}/mongodb-org/{{ver}} multiverse" > /etc/apt/sources.list.d/mongodb-org.list'
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - get apt key
+    get_url:
+      url: https://www.mongodb.org/static/pgp/server-{{ver}}.asc
+      dest: /tmp/mongodb_signing-{{ver}}.key
+      force: no
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - add apt key
+    shell: "apt-key add /tmp/mongodb_signing-{{ver}}.key"
+    # shell: "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6"
+    when: ansible_distribution == 'Ubuntu' and stat.stat.exists == False
+
+  -
+    name: Ubuntu - apt update
+    apt:
+      update_cache: yes
+    when: ansible_distribution == 'Ubuntu'
 
   # CentOS
 
@@ -52,5 +96,4 @@
 
   -
     name: systemctl start
-    shell: systemctl start mongod
-    when: ansible_distribution == 'CentOS'
+    shell: "systemctl start {{service_name}}"

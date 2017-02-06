@@ -11,36 +11,47 @@
     ver: 5.7
     apt: mysql-apt-config_0.8.1-1_all.deb
     yum: mysql57-community-release-el7-9.noarch.rpm
-    pub_keys:
-      "5.7-Ubuntu-16.04": "8C718D3B5072E1F5"
+    service_names:
+      "Ubuntu": "mysql"
+      "CentOS": "mysqld"
 
   tasks:
 
   -
-    name: systemctl - test
-    shell: systemctl -t service --all | grep -c mysql
+    name: test systemctl
+    shell: command -v systemctl
     ignore_errors: true
-    register: service
-
+    register: systemctl
   -
     assert:
       that:
-        - "service.stdout == '0'"
-      msg: "service has beed installed!"
+        - "systemctl.stdout != ''"
+      msg: "Command systemctl not found."
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_names[ansible_distribution]}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_names[ansible_distribution]}} has beed installed!"
 
   # Ubuntu
 
   -
-    name: Ubuntu - test apt source
+    name: Ubuntu - test repo
     stat:
       path: "/etc/apt/sources.list.d/mysql.list"
     register: stat
     when: ansible_distribution == 'Ubuntu'
 
   - 
-    name: Ubuntu - copy apt source
+    name: Ubuntu - copy repo
     copy:
-      src: "mysql/mysql-{{ver}}-{{ansible_distribution}}-{{ansible_distribution_version}}"
+      src: "mysql/mysql-{{ver}}-{{ansible_distribution}}-{{ansible_distribution_version}}.list"
       dest: /etc/apt/sources.list.d/mysql.list
       owner: root
       group: root
@@ -108,7 +119,5 @@
     when: ansible_distribution == 'CentOS'
 
   -
-    name: CentOS - service
-    shell: systemctl start mysqld
-    when: ansible_distribution == 'CentOS'
-    # already for Ubuntu after installed
+    name: systemctl - start
+    shell: "systemctl start {{service_names[ansible_distribution]}}"

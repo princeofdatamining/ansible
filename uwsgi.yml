@@ -1,0 +1,37 @@
+---
+# ansible-playbook -i HOST, uwsgi.yml
+-
+  hosts:
+    all
+
+  tasks:
+
+  -
+    name: test pip
+    shell: "command -v pip"
+    ignore_errors: true
+    register: pip
+  -
+    assert:
+      that:
+        - "pip.rc == 0 and pip.stdout != ''"
+      msg: "Command pip not found."
+
+  # Ubuntu: libexpat1-dev libpython-dev libpython2.7 libpython2.7-dev python2.7-dev
+  -
+    package:
+      name: python-dev
+
+  -
+    name: test uwsgi
+    shell: "pip freeze"
+    register: freeze
+  -
+    assert:
+      that:
+        - "freeze.stdout.find('\nuWSGI==') == -1"
+      msg: "package uwsgi has beed installed."
+
+  -
+    name: install uwsgi
+    shell: "pip install uwsgi"

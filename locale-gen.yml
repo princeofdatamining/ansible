@@ -17,4 +17,6 @@
 
   tasks:
 
-  - command: locale-gen zh_CN.UTF-8
+  -
+    command: locale-gen zh_CN.UTF-8
+    ignore_errors: true

@@ -15,6 +15,11 @@
     stat:
       path: "{{path}}"
     register: stat
+  -
+    assert:
+      that:
+        - "stat.stat.exists == False"
+      msg: "Path {{path}} exists."
 
   -
     name: mkdir with owner and group
@@ -25,7 +30,7 @@
       state: directory
       mode: 0775
       force: no
-    when: stat.stat.exists == False and group != '' and user != ''
+    when: group != '' and user != ''
 
   -
     name: mkdir with group
@@ -35,7 +40,7 @@
       state: directory
       mode: 0775
       force: no
-    when: stat.stat.exists == False and group != '' and user == ''
+    when: group != '' and user == ''
 
   -
     name: mkdir with current
@@ -44,7 +49,7 @@
       state: directory
       mode: 0775
       force: no
-    when: stat.stat.exists == False and group == '' and user == ''
+    when: group == '' and user == ''
 
   -
     name: mkdir with owner
@@ -54,4 +59,4 @@
       state: directory
       mode: 0775
       force: no
-    when: stat.stat.exists == False and group == '' and user != ''
+    when: group == '' and user != ''
