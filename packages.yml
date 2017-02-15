@@ -1,0 +1,27 @@
+---
+# ansible-playbook -i HOST, packages.yml
+-
+  hosts:
+    all
+
+  vars:
+    packages:
+      "Ubuntu":
+        - python2.7-minimal
+        - python2.7-dev
+        - "wget"
+        - "curl"
+        - "git"
+      "CentOS":
+        - python-devel
+        - "wget"
+        - "curl"
+        - "git"
+        - "net-tools"
+
+  tasks:
+
+  -
+    name: "packages"
+    package: name={{ item }}
+    with_items: "{{packages[ansible_distribution]}}"

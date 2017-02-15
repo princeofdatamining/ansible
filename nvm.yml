@@ -1,0 +1,77 @@
+---
+# ansible-playbook -i HOST, -e ver= -e path= -e group= nvm.yml
+
+# wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+# NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node nvm install 6.2.0
+# npm config set registry https://registry.npm.taobao.org
+-
+  hosts:
+    all
+
+  environment:
+    NVM_DIR: "{{path}}"
+
+  vars:
+    command_name: nvm
+    ver: v0.33.0
+    path: ''
+
+  tasks:
+
+  -
+    name: "test path"
+    stat:
+      path: "{{path}}"
+    register: stat
+
+  -
+    name: "command_v"
+    shell: "command -v {{command_name}}"
+    ignore_errors: true
+    register: command_v
+  -
+    name: "test install.sh"
+    stat:
+      path: "/tmp/get-{{command_name}}.sh"
+    ignore_errors: true
+    register: install_script
+    when: (command_v.rc != 0 or command_v.stdout == '') and stat.stat.exists == False
+  -
+    name: "get install.sh"
+    get_url:
+      url: "https://raw.githubusercontent.com/creationix/nvm/{{ver}}/install.sh"
+      dest: "/tmp/get-{{command_name}}.sh"
+    when: (command_v.rc != 0 or command_v.stdout == '') and stat.stat.exists == False and install_script.stat.exists == False
+  -
+    name: "install {{command_name}}"
+    shell: "bash /tmp/get-{{command_name}}.sh"
+    when: (command_v.rc != 0 or command_v.stdout == '') and stat.stat.exists == False
+
+  -
+    name: "command_v"
+    shell: "command -v {{command_name}}"
+    ignore_errors: true
+    register: command_v
+  -
+    assert:
+      that:
+        - "command_v.rc == 0 and command_v.stdout != ''"
+      msg: "Command {{command_name}} not found."
+
+  -
+    name: "test env NVM_DIR"
+    shell: "cat ~/.bash_profile | grep -c 'export NVM_DIR='"
+    ignore_errors: true
+    register: export
+  -
+    name: "add env NVM_DIR"
+    shell: echo "export NVM_DIR={{path}}" >> ~/.bash_profile && echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bash_profile
+    when: (export.rc != 0 or export.stdout == "0") and path != ''
+
+  -
+    name: "set NVM_DIR' group"
+    file:
+      path: "{{path}}"
+      group: "{{group}}"
+      recurse: yes
+    when: group != '' and path != ''

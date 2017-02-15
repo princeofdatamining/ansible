@@ -1,4 +1,6 @@
 
+iptables
+
 swap.yml:
     check mkswap and swapon runned
 

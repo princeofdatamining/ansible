@@ -1,0 +1,57 @@
+---
+# ansible-playbook -i HOST, -e compose_ver= docker.yml
+
+# wget -qO- https://get.docker.com/ | sh
+# usermod -aG docker LOGIN
+
+# ansible-playbook -i HOST, -e user=USER -e group=GROUP -e grouplist=docker,wheel user.yml
+-
+  hosts:
+    all
+
+  vars:
+    compose_ver: 1.10.0
+
+  tasks:
+
+  -
+    name: test docker
+    shell: command -v docker
+    ignore_errors: true
+    register: docker
+
+  -
+    name: test get-docker.sh
+    stat:
+      path: /tmp/get-docker.sh
+    ignore_errors: true
+    register: docker_installation
+    when: (docker.rc != 0 or docker.stdout == '')
+
+  -
+    name: get get-docker.sh
+    get_url:
+      url: https://get.docker.com/
+      dest: /tmp/get-docker.sh
+    when: (docker.rc != 0 or docker.stdout == '') and docker_installation.stat.exists == False
+
+  -
+    name: install docker
+    shell: bash /tmp/get-docker.sh
+    when: (docker.rc != 0 or docker.stdout == '')
+
+  ###
+
+  -
+    name: test compose
+    shell: command -v docker-compose
+    ignore_errors: true
+    register: compose
+
+  -
+    name: "install docker-compose"
+    get_url:
+      url: "https://github.com/docker/compose/releases/download/{{compose_ver}}/docker-compose-{{ansible_system}}-{{ansible_machine}}"
+      dest: /usr/local/bin/docker-compose
+      mode: 0755
+    when: (compose.rc != 0 or compose.stdout == '')
