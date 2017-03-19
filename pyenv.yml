@@ -1,10 +1,15 @@
 ---
-# ansible-playbook -i HOST, -e path=/data/pyenv -e group=pyenv pyenv.yml
+# ansible-playbook -i HOST, -u `whoami` -e path=/data/pyenv -e group=pyenv pyenv.yml
 
 # apt-get install -y make libssl-dev build-essential zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils       openssl gcc
 # yum install -y patch gcc openssl-devel zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel
 
-# wget http://mirrors.sohu.com/python/3.5.2/Python-3.5.2.tar.xz
+# wget https://www.python.org/ftp/python/
+# wget http://mirrors.sohu.com/python/
+
+# 3.6.0/Python-3.6.0.tar.xz
+# 3.5.3/Python-3.5.3.tar.xz
+# 2.7.13/Python-2.7.13.tar.xz
 -
   hosts:
     all

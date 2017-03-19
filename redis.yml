@@ -1,0 +1,36 @@
+---
+# ansible-playbook -i HOST, redis.yml
+
+# redis-cli -p 6379
+-
+  hosts:
+    all
+
+  vars:
+    service_name: "redis"
+
+  tasks:
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_name}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_name}} has beed installed!"
+
+  -
+    name: package
+    package:
+      name: redis
+
+  -
+    name: systemctl - enable
+    shell: "systemctl enable {{service_name}}"
+
+  -
+    name: systemctl - start
+    shell: "systemctl start {{service_name}}"

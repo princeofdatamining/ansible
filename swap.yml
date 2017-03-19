@@ -9,7 +9,7 @@
 
   tasks:
 
-  - 
+  -
     stat:
       path: "{{file}}"
     register: swap
@@ -19,11 +19,12 @@
     command: dd if=/dev/zero of="{{file}}" bs=1024 count=2048k
     when: swap.stat.exists == False
 
-  # TODO: check mounted
-
   -
     name: mkswap
     command: mkswap "{{file}}"
+    when: swap.stat.exists == False
+
+  # TODO: check mounted
 
   -
     name: mount

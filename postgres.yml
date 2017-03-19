@@ -1,0 +1,37 @@
+---
+# ansible-playbook -i HOST, postgres.yml
+
+# postgresql-setup initdb
+# http://www.ruanyifeng.com/blog/2013/12/getting_started_with_postgresql.html
+-
+  hosts:
+    all
+
+  vars:
+    service_name: "postgresql"
+
+  tasks:
+
+  -
+    name: systemctl - test
+    shell: "systemctl start {{service_name}}"
+    ignore_errors: true
+    register: service
+  -
+    assert:
+      that:
+        - "service.rc != 0"
+      msg: "service {{service_name}} has beed installed!"
+
+  -
+    name: package
+    package:
+      name: postgresql-server
+
+  -
+    name: systemctl - enable
+    shell: "systemctl enable {{service_name}}"
+
+  -
+    name: systemctl - start
+    shell: "systemctl start {{service_name}}"

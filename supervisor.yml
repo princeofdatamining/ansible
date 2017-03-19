@@ -10,17 +10,6 @@
   tasks:
 
   -
-    name: test systemctl
-    shell: command -v systemctl
-    ignore_errors: true
-    register: systemctl
-  -
-    assert:
-      that:
-        - "systemctl.rc == 0 and systemctl.stdout != ''"
-      msg: "Command systemctl not found."
-
-  -
     name: systemctl - test
     shell: "systemctl start {{service_name}}"
     ignore_errors: true
@@ -31,7 +20,7 @@
         - "service.rc != 0"
       msg: "service {{service_name}} has beed installed!"
 
-  - 
+  -
     package:
       name: python-setuptools
 

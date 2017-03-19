@@ -1,0 +1,41 @@
+---
+# ansible-playbook -i HOST, -e major= -e minor= epel.yml
+
+# wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+# sudo rpm -Uvh epel-release-7-9.noarch.rpm
+-
+  hosts:
+    all
+
+  vars:
+    major: 7
+    minor: 9
+
+  tasks:
+
+  -
+    name: test .repo
+    stat:
+      path: "/etc/yum.repos.d/epel.repo"
+    ignore_errors: true
+    register: epel_repo
+
+  -
+    name: test .rpm
+    stat:
+      path: "/tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
+    ignore_errors: true
+    register: rpm_file
+    when: epel_repo.stat.exists == False
+
+  -
+    name: get .rpm
+    get_url:
+      url: "http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-{{major}}-{{minor}}.noarch.rpm"
+      dest: "/tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
+    when: epel_repo.stat.exists == False and rpm_file.stat.exists == False
+
+  -
+    name: install .rpm
+    shell: "rpm -Uvh /tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
+    when: epel_repo.stat.exists == False

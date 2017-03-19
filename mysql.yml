@@ -22,17 +22,6 @@
   tasks:
 
   -
-    name: test systemctl
-    shell: command -v systemctl
-    ignore_errors: true
-    register: systemctl
-  -
-    assert:
-      that:
-        - "systemctl.stdout != ''"
-      msg: "Command systemctl not found."
-
-  -
     name: systemctl - test
     shell: "systemctl start {{service_names[ansible_distribution]}}"
     ignore_errors: true
@@ -52,7 +41,7 @@
     register: stat
     when: ansible_distribution == 'Ubuntu'
 
-  - 
+  -
     name: Ubuntu - copy repo
     copy:
       src: "mysql/mysql-{{ver}}-{{ansible_distribution}}-{{ansible_distribution_version}}.list"
@@ -121,6 +110,10 @@
     package:
       name: mysql-community-server
     when: ansible_distribution == 'CentOS'
+
+  -
+    name: systemctl - enable
+    shell: "systemctl enable {{service_names[ansible_distribution]}}"
 
   -
     name: systemctl - start

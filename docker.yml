@@ -4,7 +4,7 @@
 # wget -qO- https://get.docker.com/ | sh
 # usermod -aG docker LOGIN
 
-# ansible-playbook -i HOST, -e user=USER -e group=GROUP -e grouplist=docker,wheel user.yml
+# ansible-playbook -i HOST, docker.yml
 -
   hosts:
     all
@@ -55,3 +55,11 @@
       dest: /usr/local/bin/docker-compose
       mode: 0755
     when: (compose.rc != 0 or compose.stdout == '')
+
+  -
+    name: enable service
+    shell: "systemctl enable docker"
+
+  -
+    name: start service
+    shell: "systemctl start docker"

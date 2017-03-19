@@ -18,6 +18,8 @@
         - "curl"
         - "git"
         - "net-tools"
+        - "telnet"
+        - "lsof"
 
   tasks:
 

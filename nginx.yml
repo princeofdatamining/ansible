@@ -12,17 +12,6 @@
   tasks:
 
   -
-    name: test systemctl
-    shell: command -v systemctl
-    ignore_errors: true
-    register: systemctl
-  -
-    assert:
-      that:
-        - "systemctl.stdout != ''"
-      msg: "Command systemctl not found."
-
-  -
     name: systemctl - test
     shell: "systemctl start {{service_name}}"
     ignore_errors: true
@@ -75,7 +64,7 @@
     register: stat
     when: ansible_distribution == 'CentOS'
 
-  - 
+  -
     name: CentOS - copy repo
     copy:
       src: "nginx/nginx-{{ansible_distribution}}-{{ansible_distribution_major_version}}.repo"
@@ -90,6 +79,10 @@
   -
     package:
       name: nginx
+
+  -
+    name: enable service
+    shell: "systemctl enable {{service_name}}"
 
   -
     name: start service
