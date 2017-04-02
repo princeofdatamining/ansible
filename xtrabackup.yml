@@ -1,0 +1,46 @@
+---
+# ansible-playbook -i HOST, -e v1=2 -e v2=4 -e v3=6 -e v4=2 xtrabackup.yml
+-
+  hosts:
+    all
+
+  vars:
+    v1: "2"
+    v2: "4"
+    v3: "6"
+    v4: "2"
+    versions:
+      - "...-2.4.0-rc1/...-24-2.4.0-rc1.1.el7..."
+      - "...-2.4.1/...-24-2.4.1-1.el7..."
+      - "...-2.4.6/...-24-2.4.6-2.el7..."
+
+  tasks:
+
+  # CentOS
+
+  -
+    name: test xtrabackup
+    shell: command -v xtrabackup
+    ignore_errors: true
+    register: command
+
+  -
+    name: CentOS - test .rpm
+    stat:
+      path: "/tmp/percona-xtrabackup.rpm"
+    ignore_errors: true
+    register: stat
+    when: (command.rc != 0 or command.stdout == '')
+
+  -
+    name: CentOS - get .rpm
+    get_url:
+      url: "https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-{{v1}}.{{v2}}.{{v3}}/binary/redhat/7/x86_64/percona-xtrabackup-{{v1}}{{v2}}-{{v1}}.{{v2}}.{{v3}}-{{v4}}.el7.x86_64.rpm"
+      dest: "/tmp/percona-xtrabackup.rpm"
+    when: (command.rc != 0 or command.stdout == '') and ansible_distribution == 'CentOS' and stat.stat.exists == False
+
+  -
+    name: CentOS - install
+    yum:
+      name: "/tmp/percona-xtrabackup.rpm"
+    when: (command.rc != 0 or command.stdout == '') and ansible_distribution == 'CentOS' and stat.stat.exists == False
