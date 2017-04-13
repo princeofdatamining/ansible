@@ -1,0 +1,63 @@
+---
+# ansible-playbook -i HOST, -u `whoami` java.yml
+#
+# https://www.digitalocean.com/community/tutorials/how-to-install-java-on-centos-and-fedora
+# wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.rpm"
+# wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jdk-8u60-linux-x64.rpm"
+#
+# http://www.webupd8.org/2012/01/install-oracle-java-jdk-7-in-ubuntu-via.html
+-
+  hosts:
+    all
+
+  vars:
+    command: java
+    rpmv: 7u79-b15
+    rpm: jdk-7u79-linux-x64.rpm
+    homes:
+      CentOS: /usr/java/jdk1.7.0_79/
+
+  tasks:
+
+  -
+    name: "test command {{command}}"
+    shell: "command -v {{command}}"
+    ignore_errors: true
+    register: command
+  -
+    assert:
+      that:
+        - "command.rc != 0 or command.stdout == ''"
+      msg: "Command {{command}} already exists."
+
+  # CentOS
+
+  -
+    name: "CentOS - test {{rpm}}"
+    stat:
+      path: "/tmp/{{rpm}}"
+    ignore_errors: true
+    register: stat
+    when: ansible_distribution == 'CentOS'
+
+  -
+    name: "CentOS - get {{rpm}}"
+    shell: 'wget -O "/tmp/{{rpm}}" --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/{{rpmv}}/{{rpm}}"'
+    when: ansible_distribution == 'CentOS' and stat.stat.exists == False
+
+  -
+    name: CentOS - localinstall
+    yum:
+      name: "/tmp/{{rpm}}"
+    when: ansible_distribution == 'CentOS'
+
+  ###
+
+  -
+    name: test env JAVA_HOME
+    shell: cat ~/.bash_profile | grep -c JAVA_HOME || true
+    register: env
+  -
+    name: append JAVA_HOME
+    shell: echo "export JAVA_HOME={{homes[ansible_distribution]}}" >> ~/.bash_profile
+    when: env.stdout == "0"
