@@ -15,7 +15,7 @@
     rpmv: 7u79-b15
     rpm: jdk-7u79-linux-x64.rpm
     homes:
-      CentOS: /usr/java/jdk1.7.0_79/
+      CentOS: /usr/java/default
 
   tasks:
 

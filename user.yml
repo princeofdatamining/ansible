@@ -11,6 +11,14 @@
     group: ""
     grouplist: ""
     pub: ""
+  vars_prompt:
+    - name: "password"
+      prompt: "what is your password?"
+      private: yes
+    - name: "salt"
+      prompt: "what is your salt for password?"
+      private: yes
+      default: salt
 
   tasks:
 
@@ -52,12 +60,24 @@
     user:
       name: "{{user}}"
       groups: "{{grouplist}}"
-    when: user != "" and user_exist.stdout != "x" and group == "" and grouplist != ""
+    when: user != "" and                              group == "" and grouplist != ""
 
   -
     name: usermod group
     command: usermod -aG "{{group}}" "{{user}}"
     when: user != "" and user_exist.stdout != "0" and group != ""
+
+
+  -
+    shell: "python -c 'import crypt; print crypt.crypt(\"{{password}}\", \"$1${{salt}}\")'"
+    register: crypted
+    when: user != "" and user_exist.stdout == "0" and password != ""
+  -
+    name: password
+    user:
+      name: "{{user}}"
+      password: "{{crypted.stdout}}"
+    when: user != "" and user_exist.stdout == "0" and password != ""
 
   -
     authorized_key:

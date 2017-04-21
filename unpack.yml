@@ -1,0 +1,34 @@
+---
+# ansible-playbook -i HOST, -u `whoami` -e url=... jar.yml
+#
+# http://mirror.bit.edu.cn/apache/
+# http://www-us.apache.org/dist/
+#
+### hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+### zookeeper/stable/zookeeper-3.4.10.tar.gz
+### kafka/0.10.2.0/kafka_2.11-0.10.2.0.tgz
+-
+  hosts:
+    all
+
+  vars:
+    path: /usr/java
+    group: wheel
+
+  tasks:
+
+  -
+    name: chgrp path
+    file:
+      path: "{{path}}"
+      group: "{{group}}"
+      state: directory
+      mode: 0775
+      force: no
+    when: group != ''
+
+  -
+    unarchive:
+      src: "{{url}}"
+      dest: "{{path}}"
+      remote_src: True
