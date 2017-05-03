@@ -20,6 +20,7 @@
         - "net-tools"
         - "telnet"
         - "lsof"
+        - "bind-utils" # dig
 
   tasks:
 

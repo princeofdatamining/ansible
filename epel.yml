@@ -31,11 +31,12 @@
   -
     name: get .rpm
     get_url:
-      url: "http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-{{major}}-{{minor}}.noarch.rpm"
+      url: "http://dl.fedoraproject.org/pub/epel/{{major}}/x86_64/e/epel-release-{{major}}-{{minor}}.noarch.rpm"
       dest: "/tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
     when: epel_repo.stat.exists == False and rpm_file.stat.exists == False
 
   -
-    name: install .rpm
-    shell: "rpm -Uvh /tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
+    name: localinstall
+    yum:
+      name: "/tmp/epel-release-{{major}}-{{minor}}.noarch.rpm"
     when: epel_repo.stat.exists == False

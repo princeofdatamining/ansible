@@ -1,0 +1,51 @@
+---
+# ansible-playbook -i HOST, -e major= -e minor= rabbitmq.yml
+#
+# https://www.rabbitmq.com/install-rpm.html
+#
+# yum localinstall epel-release-7-9.noarch.rpm
+# yum install erlang
+#
+# wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.9/rabbitmq-server-3.6.9-1.el7.noarch.rpm
+# yum localinstall rabbitmq-server-3.6.9-1.el7.noarch.rpm
+-
+  hosts:
+    all
+
+  vars:
+    service_name: rabbitmq-server
+    major: 3.6.9
+    minor: 1
+
+  tasks:
+
+  -
+    name: test .rpm
+    stat:
+      path: "/tmp/rabbitmq-server-{{major}}-{{minor}}.el7.noarch.rpm"
+    ignore_errors: true
+    register: rpm_file
+
+  -
+    name: get .rpm
+    get_url:
+      url: "https://www.rabbitmq.com/releases/rabbitmq-server/v{{major}}/rabbitmq-server-{{major}}-{{minor}}.el7.noarch.rpm"
+      dest: "/tmp/rabbitmq-server-{{major}}-{{minor}}.el7.noarch.rpm"
+    when: rpm_file.stat.exists == False
+
+  -
+    package:
+      name: erlang
+
+  -
+    name: localinstall
+    yum:
+      name: "/tmp/rabbitmq-server-{{major}}-{{minor}}.el7.noarch.rpm"
+
+  -
+    name: enable service
+    shell: "systemctl enable {{service_name}}"
+
+  -
+    name: start service
+    shell: "systemctl start {{service_name}}"
