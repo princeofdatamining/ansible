@@ -6,25 +6,31 @@
 
   vars:
     packages:
+      "any":
+        - "wget"
+        - "curl"
+        - "git"
       "Ubuntu":
         - python2.7-minimal
         - python2.7-dev
-        - "wget"
-        - "curl"
-        - "git"
       "CentOS":
         - python-devel
-        - "wget"
-        - "curl"
-        - "git"
+        - mysql-devel
+        - "chrony" # ntp
         - "net-tools"
         - "telnet"
         - "lsof"
         - "bind-utils" # dig
+        - "tree"
 
   tasks:
 
   -
-    name: "packages"
+    name: "packages - any"
+    package: name={{ item }}
+    with_items: "{{packages.any}}"
+
+  -
+    name: "packages - distribution"
     package: name={{ item }}
     with_items: "{{packages[ansible_distribution]}}"

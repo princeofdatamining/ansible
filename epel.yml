@@ -1,15 +1,17 @@
 ---
 # ansible-playbook -i HOST, -e major= -e minor= epel.yml
 
-# wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
-# sudo rpm -Uvh epel-release-7-9.noarch.rpm
+# yum install epel-release
+# wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+# rpm -Uvh http://mirrors.sohu.com/fedora-epel/epel-release-latest-7.noarch.rpm
+# rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 -
   hosts:
     all
 
   vars:
     major: 7
-    minor: 9
+    minor: 10
 
   tasks:
 

@@ -4,6 +4,7 @@
 # https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
 # https://dev.mysql.com/doc/refman/5.7/en/linux-installation-yum-repo.html
 
+# rpm -ivh https://repo.mysql.com//mysql57-community-release-el7-9.noarch.rpm
 # fetch initial password from /var/log/mysqld.log
 # 2017-02-06T01:38:46.790739Z 1 [Note] A temporary password is generated for root@localhost: ......
 # mysql_secure_installation
